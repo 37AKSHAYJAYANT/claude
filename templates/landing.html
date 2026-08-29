@@ -24,6 +24,13 @@
         <h1 class="hero-title">Expense tracker</h1>
         <p class="hero-subtitle">Amazing expense tracker designs for inspiration</p>
         
+        <div style="margin-bottom: 1.25rem;">
+            <button type="button" class="btn-ghost see-how-it-works-btn" id="seeHowItWorksBtn" style="cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.6rem 1.25rem; border-radius: 999px; font-weight: 500; font-size: 0.95rem; border: 1px solid var(--border); background: var(--paper-card); color: var(--ink);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                See how it works
+            </button>
+        </div>
+
         <div class="related-tags">
             <span class="related-label">Related:</span>
             <a href="#" class="related-link">expense manager</a>
@@ -88,8 +95,97 @@
     <div class="cta-inner">
         <h2 class="cta-title">Ready to take control?</h2>
         <p class="cta-body">Join thousands of people who track their expenses with Spendly.</p>
-        <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
+        <div style="display: flex; gap: 1rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+            <a href="{{ url_for('register') }}" class="btn-primary">Create free account</a>
+            <button type="button" class="btn-ghost see-how-it-works-btn" style="cursor: pointer;">See how it works</button>
+        </div>
     </div>
 </section>
 
+<!-- Video Modal Overlay -->
+<div id="videoModal" class="video-modal-overlay" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="video-modal-container">
+        <button id="closeVideoModal" class="video-modal-close" type="button" aria-label="Close modal">&times;</button>
+        <div class="video-modal-body">
+            <div class="video-responsive">
+                <iframe id="videoIframe" 
+                        src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1" 
+                        data-src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1"
+                        title="See how Spendly works" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('videoModal');
+    const closeBtn = document.getElementById('closeVideoModal');
+    const videoIframe = document.getElementById('videoIframe');
+    const videoSrc = videoIframe.getAttribute('data-src') || videoIframe.src;
+
+    function openModal() {
+        if (!videoIframe.src || videoIframe.src === '' || videoIframe.src === window.location.href) {
+            videoIframe.src = videoSrc;
+        }
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        // Stop the video by blanking the iframe src
+        videoIframe.src = '';
+    }
+
+    // Attach click listeners to all buttons/links with "See how it works" text or class
+    document.querySelectorAll('.see-how-it-works-btn, #seeHowItWorksBtn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            openModal();
+        });
+    });
+
+    document.querySelectorAll('a, button').forEach(function(el) {
+        if (el.textContent.trim().toLowerCase() === 'see how it works') {
+            el.addEventListener('click', function(e) {
+                e.preventDefault();
+                openModal();
+            });
+        }
+    });
+
+    // Close button click
+    if (closeBtn) {
+        closeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            closeModal();
+        });
+    }
+
+    // Close when clicking outside the modal container (on the backdrop overlay)
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+
+    // Close on Escape key press
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+        }
+    });
+});
+</script>
 {% endblock %}
